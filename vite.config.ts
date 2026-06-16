@@ -6,10 +6,15 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Switch the Nitro build target to Vercel when deploying there (set DEPLOY_TARGET=vercel
+// in Vercel's Environment Variables). Defaults to Cloudflare otherwise.
+const isVercel = process.env.DEPLOY_TARGET === "vercel" || !!process.env.VERCEL;
+
 export default defineConfig({
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  nitro: isVercel ? { preset: "vercel" } : undefined,
 });

@@ -62,6 +62,7 @@ export type Database = {
           origin_country: string
           package_name: string
           package_type: string | null
+          receipt_data: Json | null
           receiver_email: string | null
           receiver_name: string
           receiver_phone: string | null
@@ -94,6 +95,7 @@ export type Database = {
           origin_country: string
           package_name: string
           package_type?: string | null
+          receipt_data?: Json | null
           receiver_email?: string | null
           receiver_name: string
           receiver_phone?: string | null
@@ -126,6 +128,7 @@ export type Database = {
           origin_country?: string
           package_name?: string
           package_type?: string | null
+          receipt_data?: Json | null
           receiver_email?: string | null
           receiver_name?: string
           receiver_phone?: string | null

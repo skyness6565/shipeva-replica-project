@@ -15,7 +15,8 @@ export const Route = createFileRoute("/_authenticated/admin/packages/$id")({
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "Pending", processing: "Processing", in_transit: "In Transit",
-  arrived: "Arrived", delivered: "Delivered", held_by_customs: "Held by Customs",
+  arrived: "Arrived", out_for_delivery: "Out for Delivery",
+  delivered: "Delivered", held_by_customs: "Held by Customs",
 };
 const STATUSES = Object.entries(STATUS_LABEL);
 

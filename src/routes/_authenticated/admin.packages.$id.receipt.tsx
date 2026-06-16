@@ -276,7 +276,7 @@ function ReceiptPage() {
           >
             <Download className="h-4 w-4" /> {pdfing ? "Generating…" : "Download PDF"}
           </button>
-          <button onClick={() => window.print()} className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-2 text-sm font-semibold">
+          <button onClick={printReceipt} className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-2 text-sm font-semibold">
             <Printer className="h-4 w-4" /> Print
           </button>
         </div>

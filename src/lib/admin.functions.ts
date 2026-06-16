@@ -178,6 +178,21 @@ export const updatePackage = createServerFn({ method: "POST" })
     return pkg;
   });
 
+export const updateReceiptData = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; receipt_data: Record<string, any> }) => d)
+  .handler(async ({ data, context }) => {
+    const admin = await assertAdmin(context as Ctx);
+    const { data: pkg, error } = await admin
+      .from("packages")
+      .update({ receipt_data: data.receipt_data })
+      .eq("id", data.id)
+      .select("id,receipt_data")
+      .single();
+    if (error) throw new Error(error.message);
+    return pkg;
+  });
+
 export const deletePackage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { id: string }) => d)

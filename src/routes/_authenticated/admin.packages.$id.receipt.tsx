@@ -102,7 +102,7 @@ function ReceiptPage() {
   });
 
   // Hydrate defaults when package loads
-  useMemo(() => {
+  useEffect(() => {
     if (pkg && !fields.order_id) {
       setFields((f) => ({ ...f, order_id: pkg.reference_id || pkg.tracking_number || "" }));
     }

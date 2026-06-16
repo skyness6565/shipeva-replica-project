@@ -141,6 +141,40 @@ function ReceiptPage() {
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
   const [pdfing, setPdfing] = useState(false);
+  const [diag, setDiag] = useState<string[]>([]);
+  const log = (m: string) => setDiag((d) => [...d, `[${new Date().toLocaleTimeString()}] ${m}`]);
+
+  function runPrintDiagnostics() {
+    setDiag([]);
+    log("Starting Print diagnostics…");
+    log(`Receipt DOM present: ${receiptRef.current ? "yes" : "no"}`);
+    log(`window.print available: ${typeof window.print === "function" ? "yes" : "no"}`);
+    let testWin: Window | null = null;
+    try {
+      testWin = window.open("", "_blank", "width=400,height=300");
+    } catch (e: any) {
+      log(`window.open threw: ${e?.message ?? e}`);
+    }
+    if (!testWin) {
+      log("❌ Popup BLOCKED by browser/iframe. Allow popups for this site.");
+      return;
+    }
+    log("✅ Popup opened successfully.");
+    try {
+      testWin.document.write("<p>Print diagnostic test — closing in 1s</p>");
+      testWin.document.close();
+      log("✅ Wrote test content to popup.");
+      try {
+        testWin.print();
+        log("✅ window.print() invoked on popup (dialog should appear).");
+      } catch (e: any) {
+        log(`❌ window.print() threw: ${e?.message ?? e}`);
+      }
+      setTimeout(() => { try { testWin!.close(); } catch {} }, 1000);
+    } catch (e: any) {
+      log(`❌ Failed writing to popup: ${e?.message ?? e}`);
+    }
+  }
 
   // Hydrate state once package loads
   useEffect(() => {
@@ -281,6 +315,27 @@ function ReceiptPage() {
           </button>
         </div>
       </div>
+
+      {/* Print diagnostics (admin only) */}
+      <div className="rounded-2xl bg-white border border-border p-4 print:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="font-extrabold text-brand-deep text-sm">Print diagnostics</h3>
+            <p className="text-xs text-brand-deep/60">Verifies popup + window.print(). Use this if Print does nothing.</p>
+          </div>
+          <button
+            type="button"
+            onClick={runPrintDiagnostics}
+            className="rounded-full bg-brand-deep text-white px-4 py-2 text-xs font-semibold"
+          >
+            Run Print Test
+          </button>
+        </div>
+        {diag.length > 0 && (
+          <pre className="mt-3 bg-slate-900 text-emerald-200 text-xs p-3 rounded-lg overflow-auto max-h-56 whitespace-pre-wrap">{diag.join("\n")}</pre>
+        )}
+      </div>
+
 
       {/* Editor */}
       <div className="rounded-2xl bg-white border border-border p-5 print:hidden space-y-5">

@@ -145,7 +145,7 @@ function ReceiptPage() {
   // Hydrate state once package loads
   useEffect(() => {
     if (!pkg || receipt) return;
-    setReceipt(pkg.receipt_data ?? defaultReceipt(pkg));
+    setReceipt((pkg.receipt_data as ReceiptData | null) ?? defaultReceipt(pkg));
   }, [pkg, receipt]);
 
   const saveMut = useMutation({

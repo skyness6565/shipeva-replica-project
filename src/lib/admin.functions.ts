@@ -153,9 +153,9 @@ export const createPackage = createServerFn({ method: "POST" })
     // Upsert customers
     const ups: any[] = [];
     if (payload.sender_email)
-      ups.push({ full_name: payload.sender_name, email: payload.sender_email, phone: payload.sender_phone });
+      ups.push({ full_name: payload.sender_name, email: payload.sender_email });
     if (payload.receiver_email)
-      ups.push({ full_name: payload.receiver_name, email: payload.receiver_email, phone: payload.receiver_phone });
+      ups.push({ full_name: payload.receiver_name, email: payload.receiver_email });
     if (ups.length) await admin.from("customers").upsert(ups, { onConflict: "email" });
 
     return pkg;

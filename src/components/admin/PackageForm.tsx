@@ -224,4 +224,3 @@ function Textarea({ label, value, onChange }: { label: string; value: string; on
     </label>
   );
 }
-}

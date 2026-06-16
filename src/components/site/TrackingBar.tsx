@@ -1,16 +1,19 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { PackageSearch, Radar } from "lucide-react";
 import { toast } from "sonner";
 
 export function TrackingBar() {
   const [code, setCode] = useState("");
+  const navigate = useNavigate();
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!code.trim()) {
+    const t = code.trim();
+    if (!t) {
       toast.error("Please enter a tracking number");
       return;
     }
-    toast.success(`Looking up shipment ${code.trim()}...`);
+    navigate({ to: "/track/$trackingNumber", params: { trackingNumber: t } });
   };
 
   return (
@@ -55,3 +58,4 @@ export function TrackingBar() {
     </section>
   );
 }
+

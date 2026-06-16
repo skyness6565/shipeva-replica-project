@@ -316,6 +316,27 @@ function ReceiptPage() {
         </div>
       </div>
 
+      {/* Print diagnostics (admin only) */}
+      <div className="rounded-2xl bg-white border border-border p-4 print:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h3 className="font-extrabold text-brand-deep text-sm">Print diagnostics</h3>
+            <p className="text-xs text-brand-deep/60">Verifies popup + window.print(). Use this if Print does nothing.</p>
+          </div>
+          <button
+            type="button"
+            onClick={runPrintDiagnostics}
+            className="rounded-full bg-brand-deep text-white px-4 py-2 text-xs font-semibold"
+          >
+            Run Print Test
+          </button>
+        </div>
+        {diag.length > 0 && (
+          <pre className="mt-3 bg-slate-900 text-emerald-200 text-xs p-3 rounded-lg overflow-auto max-h-56 whitespace-pre-wrap">{diag.join("\n")}</pre>
+        )}
+      </div>
+
+
       {/* Editor */}
       <div className="rounded-2xl bg-white border border-border p-5 print:hidden space-y-5">
         <Group title="Branding">

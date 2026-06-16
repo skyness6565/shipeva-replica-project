@@ -514,8 +514,11 @@ function ReceiptPage() {
 
       <style>{`
         @media print {
-          body { background: white !important; }
-          aside, nav, header { display: none !important; }
+          @page { size: A4; margin: 10mm; }
+          html, body { background: white !important; }
+          aside, nav, header, .print\\:hidden { display: none !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+          #receipt { box-shadow: none !important; border: 0 !important; max-width: 100% !important; }
         }
       `}</style>
     </div>

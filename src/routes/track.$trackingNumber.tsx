@@ -19,10 +19,12 @@ export const Route = createFileRoute("/track/$trackingNumber")({
 });
 
 const STAGES = [
-  { key: "pending", label: "Confirmed", color: "from-fuchsia-500 to-pink-500" },
-  { key: "processing", label: "Picked", color: "from-pink-500 to-purple-500" },
-  { key: "in_transit", label: "En Route", color: "from-purple-500 to-indigo-500" },
-  { key: "held_by_customs", label: "Hold", color: "from-amber-500 to-orange-500" },
+  { key: "pending", label: "Pending", color: "from-fuchsia-500 to-pink-500" },
+  { key: "processing", label: "Processing", color: "from-pink-500 to-purple-500" },
+  { key: "in_transit", label: "In Transit", color: "from-purple-500 to-indigo-500" },
+  { key: "arrived", label: "Arrived", color: "from-indigo-500 to-teal-500" },
+  { key: "held_by_customs", label: "Customs Hold", color: "from-amber-500 to-orange-500" },
+  { key: "out_for_delivery", label: "Out for Delivery", color: "from-orange-500 to-emerald-500" },
   { key: "delivered", label: "Delivered", color: "from-emerald-500 to-green-500" },
 ];
 
@@ -31,6 +33,7 @@ const STATUS_LABEL: Record<string, string> = {
   processing: "Processing",
   in_transit: "In Transit",
   arrived: "Arrived",
+  out_for_delivery: "Out for Delivery",
   delivered: "Delivered",
   held_by_customs: "Custom Hold",
 };
@@ -40,6 +43,7 @@ const STATUS_BADGE: Record<string, string> = {
   processing: "bg-blue-500/20 text-blue-200 border-blue-400/40",
   in_transit: "bg-indigo-500/20 text-indigo-200 border-indigo-400/40",
   arrived: "bg-teal-500/20 text-teal-200 border-teal-400/40",
+  out_for_delivery: "bg-orange-500/20 text-orange-200 border-orange-400/40",
   delivered: "bg-emerald-500/25 text-emerald-200 border-emerald-400/50",
   held_by_customs: "bg-amber-500/20 text-amber-200 border-amber-400/40",
 };

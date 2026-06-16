@@ -19,6 +19,7 @@ import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminPackagesIndexRouteImport } from './routes/_authenticated/admin.packages.index'
 import { Route as AuthenticatedAdminPackagesNewRouteImport } from './routes/_authenticated/admin.packages.new'
 import { Route as AuthenticatedAdminPackagesIdRouteImport } from './routes/_authenticated/admin.packages.$id'
+import { Route as AuthenticatedAdminPackagesIdReceiptRouteImport } from './routes/_authenticated/admin.packages.$id.receipt'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -73,6 +74,12 @@ const AuthenticatedAdminPackagesIdRoute =
     path: '/packages/$id',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPackagesIdReceiptRoute =
+  AuthenticatedAdminPackagesIdReceiptRouteImport.update({
+    id: '/receipt',
+    path: '/receipt',
+    getParentRoute: () => AuthenticatedAdminPackagesIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -81,9 +88,10 @@ export interface FileRoutesByFullPath {
   '/track/$trackingNumber': typeof TrackTrackingNumberRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
-  '/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRoute
+  '/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRouteWithChildren
   '/admin/packages/new': typeof AuthenticatedAdminPackagesNewRoute
   '/admin/packages/': typeof AuthenticatedAdminPackagesIndexRoute
+  '/admin/packages/$id/receipt': typeof AuthenticatedAdminPackagesIdReceiptRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,9 +99,10 @@ export interface FileRoutesByTo {
   '/track/$trackingNumber': typeof TrackTrackingNumberRoute
   '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
-  '/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRoute
+  '/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRouteWithChildren
   '/admin/packages/new': typeof AuthenticatedAdminPackagesNewRoute
   '/admin/packages': typeof AuthenticatedAdminPackagesIndexRoute
+  '/admin/packages/$id/receipt': typeof AuthenticatedAdminPackagesIdReceiptRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,9 +113,10 @@ export interface FileRoutesById {
   '/track/$trackingNumber': typeof TrackTrackingNumberRoute
   '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
-  '/_authenticated/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRoute
+  '/_authenticated/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRouteWithChildren
   '/_authenticated/admin/packages/new': typeof AuthenticatedAdminPackagesNewRoute
   '/_authenticated/admin/packages/': typeof AuthenticatedAdminPackagesIndexRoute
+  '/_authenticated/admin/packages/$id/receipt': typeof AuthenticatedAdminPackagesIdReceiptRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/admin/packages/$id'
     | '/admin/packages/new'
     | '/admin/packages/'
+    | '/admin/packages/$id/receipt'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/admin/packages/$id'
     | '/admin/packages/new'
     | '/admin/packages'
+    | '/admin/packages/$id/receipt'
   id:
     | '__root__'
     | '/'
@@ -142,6 +154,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/packages/$id'
     | '/_authenticated/admin/packages/new'
     | '/_authenticated/admin/packages/'
+    | '/_authenticated/admin/packages/$id/receipt'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -223,13 +236,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPackagesIdRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/packages/$id/receipt': {
+      id: '/_authenticated/admin/packages/$id/receipt'
+      path: '/receipt'
+      fullPath: '/admin/packages/$id/receipt'
+      preLoaderRoute: typeof AuthenticatedAdminPackagesIdReceiptRouteImport
+      parentRoute: typeof AuthenticatedAdminPackagesIdRoute
+    }
   }
 }
+
+interface AuthenticatedAdminPackagesIdRouteChildren {
+  AuthenticatedAdminPackagesIdReceiptRoute: typeof AuthenticatedAdminPackagesIdReceiptRoute
+}
+
+const AuthenticatedAdminPackagesIdRouteChildren: AuthenticatedAdminPackagesIdRouteChildren =
+  {
+    AuthenticatedAdminPackagesIdReceiptRoute:
+      AuthenticatedAdminPackagesIdReceiptRoute,
+  }
+
+const AuthenticatedAdminPackagesIdRouteWithChildren =
+  AuthenticatedAdminPackagesIdRoute._addFileChildren(
+    AuthenticatedAdminPackagesIdRouteChildren,
+  )
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-  AuthenticatedAdminPackagesIdRoute: typeof AuthenticatedAdminPackagesIdRoute
+  AuthenticatedAdminPackagesIdRoute: typeof AuthenticatedAdminPackagesIdRouteWithChildren
   AuthenticatedAdminPackagesNewRoute: typeof AuthenticatedAdminPackagesNewRoute
   AuthenticatedAdminPackagesIndexRoute: typeof AuthenticatedAdminPackagesIndexRoute
 }
@@ -237,7 +272,8 @@ interface AuthenticatedAdminRouteChildren {
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
-  AuthenticatedAdminPackagesIdRoute: AuthenticatedAdminPackagesIdRoute,
+  AuthenticatedAdminPackagesIdRoute:
+    AuthenticatedAdminPackagesIdRouteWithChildren,
   AuthenticatedAdminPackagesNewRoute: AuthenticatedAdminPackagesNewRoute,
   AuthenticatedAdminPackagesIndexRoute: AuthenticatedAdminPackagesIndexRoute,
 }

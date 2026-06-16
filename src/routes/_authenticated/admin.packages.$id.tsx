@@ -7,7 +7,7 @@ import {
 } from "@/lib/admin.functions";
 import { PackageForm, type PackageFormValues } from "@/components/admin/PackageForm";
 import { toast } from "sonner";
-import { Trash2, Plus, MapPin, Clock, ExternalLink } from "lucide-react";
+import { Trash2, Plus, MapPin, Clock, ExternalLink, Receipt } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/packages/$id")({
   component: EditPackage,
@@ -80,6 +80,10 @@ function EditPackage() {
           <Link to="/track/$trackingNumber" params={{ trackingNumber: data.package.tracking_number }}
             className="inline-flex items-center gap-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold">
             <ExternalLink className="h-4 w-4" /> Public page
+          </Link>
+          <Link to="/admin/packages/$id/receipt" params={{ id }}
+            className="inline-flex items-center gap-1 rounded-full bg-[#1a76d2] text-white px-4 py-2 text-sm font-semibold">
+            <Receipt className="h-4 w-4" /> Receipt
           </Link>
           <button onClick={() => confirm("Delete this package?") && delMut.mutate()}
             className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white">

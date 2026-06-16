@@ -15,8 +15,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrackTrackingNumberRouteImport } from './routes/track.$trackingNumber'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminCustomersRouteImport } from './routes/_authenticated/admin.customers'
 import { Route as AuthenticatedAdminPackagesIndexRouteImport } from './routes/_authenticated/admin.packages.index'
 import { Route as AuthenticatedAdminPackagesNewRouteImport } from './routes/_authenticated/admin.packages.new'
+import { Route as AuthenticatedAdminPackagesIdRouteImport } from './routes/_authenticated/admin.packages.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -47,6 +49,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminCustomersRoute =
+  AuthenticatedAdminCustomersRouteImport.update({
+    id: '/customers',
+    path: '/customers',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminPackagesIndexRoute =
   AuthenticatedAdminPackagesIndexRouteImport.update({
     id: '/packages/',
@@ -59,13 +67,21 @@ const AuthenticatedAdminPackagesNewRoute =
     path: '/packages/new',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminPackagesIdRoute =
+  AuthenticatedAdminPackagesIdRouteImport.update({
+    id: '/packages/$id',
+    path: '/packages/$id',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/track/$trackingNumber': typeof TrackTrackingNumberRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRoute
   '/admin/packages/new': typeof AuthenticatedAdminPackagesNewRoute
   '/admin/packages/': typeof AuthenticatedAdminPackagesIndexRoute
 }
@@ -73,7 +89,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/track/$trackingNumber': typeof TrackTrackingNumberRoute
+  '/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRoute
   '/admin/packages/new': typeof AuthenticatedAdminPackagesNewRoute
   '/admin/packages': typeof AuthenticatedAdminPackagesIndexRoute
 }
@@ -84,7 +102,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/track/$trackingNumber': typeof TrackTrackingNumberRoute
+  '/_authenticated/admin/customers': typeof AuthenticatedAdminCustomersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/packages/$id': typeof AuthenticatedAdminPackagesIdRoute
   '/_authenticated/admin/packages/new': typeof AuthenticatedAdminPackagesNewRoute
   '/_authenticated/admin/packages/': typeof AuthenticatedAdminPackagesIndexRoute
 }
@@ -95,7 +115,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin'
     | '/track/$trackingNumber'
+    | '/admin/customers'
     | '/admin/'
+    | '/admin/packages/$id'
     | '/admin/packages/new'
     | '/admin/packages/'
   fileRoutesByTo: FileRoutesByTo
@@ -103,7 +125,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/track/$trackingNumber'
+    | '/admin/customers'
     | '/admin'
+    | '/admin/packages/$id'
     | '/admin/packages/new'
     | '/admin/packages'
   id:
@@ -113,7 +137,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/admin'
     | '/track/$trackingNumber'
+    | '/_authenticated/admin/customers'
     | '/_authenticated/admin/'
+    | '/_authenticated/admin/packages/$id'
     | '/_authenticated/admin/packages/new'
     | '/_authenticated/admin/packages/'
   fileRoutesById: FileRoutesById
@@ -169,6 +195,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/customers': {
+      id: '/_authenticated/admin/customers'
+      path: '/customers'
+      fullPath: '/admin/customers'
+      preLoaderRoute: typeof AuthenticatedAdminCustomersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/packages/': {
       id: '/_authenticated/admin/packages/'
       path: '/packages'
@@ -183,17 +216,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminPackagesNewRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/packages/$id': {
+      id: '/_authenticated/admin/packages/$id'
+      path: '/packages/$id'
+      fullPath: '/admin/packages/$id'
+      preLoaderRoute: typeof AuthenticatedAdminPackagesIdRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminCustomersRoute: typeof AuthenticatedAdminCustomersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminPackagesIdRoute: typeof AuthenticatedAdminPackagesIdRoute
   AuthenticatedAdminPackagesNewRoute: typeof AuthenticatedAdminPackagesNewRoute
   AuthenticatedAdminPackagesIndexRoute: typeof AuthenticatedAdminPackagesIndexRoute
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminCustomersRoute: AuthenticatedAdminCustomersRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminPackagesIdRoute: AuthenticatedAdminPackagesIdRoute,
   AuthenticatedAdminPackagesNewRoute: AuthenticatedAdminPackagesNewRoute,
   AuthenticatedAdminPackagesIndexRoute: AuthenticatedAdminPackagesIndexRoute,
 }

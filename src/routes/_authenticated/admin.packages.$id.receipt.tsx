@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getPackage } from "@/lib/admin.functions";
 import {
   ArrowLeft, Printer, User, Users, Grid3x3, CreditCard,

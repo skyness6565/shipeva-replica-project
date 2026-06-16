@@ -13,7 +13,7 @@ export const trackPackage = createServerFn({ method: "POST" })
     const { data: pkg, error } = await supabaseAdmin
       .from("packages")
       .select(
-        "id,tracking_number,reference_id,package_name,sender_name,receiver_name,origin_country,destination_country,current_location,status,shipment_method,package_type,weight,estimated_delivery_days,shipment_description,dispatch_date,expected_delivery_date,image_urls,created_at,updated_at",
+        "id,tracking_number,reference_id,package_name,sender_name,sender_email,sender_phone,receiver_name,receiver_email,receiver_phone,origin_country,destination_country,current_location,status,shipment_method,package_type,weight,shipment_fee,currency,estimated_delivery_days,shipment_description,dispatch_date,expected_delivery_date,image_urls,created_at,updated_at",
       )
       .eq("tracking_number", data.trackingNumber)
       .maybeSingle();

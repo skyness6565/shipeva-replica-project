@@ -1,4 +1,5 @@
-import { createFileRoute, Link, useServerFn } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { trackPackage } from "@/lib/tracking.functions";
 import { TopBar } from "@/components/site/TopBar";

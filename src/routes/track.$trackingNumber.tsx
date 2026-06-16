@@ -65,10 +65,28 @@ function fmtTime(d: string) {
 function TrackPage() {
   const { trackingNumber } = Route.useParams();
   const track = useServerFn(trackPackage);
+  const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
     queryKey: ["track", trackingNumber],
     queryFn: () => track({ data: { trackingNumber } }),
   });
+
+  const packageId = data && "found" in data && data.found ? data.package.id : null;
+  useEffect(() => {
+    if (!packageId) return;
+    const channel = supabase
+      .channel(`track-${packageId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "packages", filter: `id=eq.${packageId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["track", trackingNumber] });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "tracking_events", filter: `package_id=eq.${packageId}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["track", trackingNumber] });
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [packageId, trackingNumber, queryClient]);
 
   return (
     <main className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,#3b1b6e_0%,#1f0b40_45%,#170733_100%)] text-white">

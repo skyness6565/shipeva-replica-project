@@ -79,7 +79,7 @@ export function SiteFooter() {
             </li>
             <li className="flex items-start gap-3">
               <Mail className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
-              <span>hello@shipvex.co</span>
+              <span>katehitler4@gmail.com</span>
             </li>
           </ul>
         </div>

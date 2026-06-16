@@ -7,7 +7,7 @@ import {
 } from "@/lib/admin.functions";
 import { PackageForm, type PackageFormValues } from "@/components/admin/PackageForm";
 import { toast } from "sonner";
-import { Trash2, Plus, MapPin, Clock, ExternalLink } from "lucide-react";
+import { Trash2, Plus, MapPin, Clock, ExternalLink, Receipt } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/packages/$id")({
   component: EditPackage,

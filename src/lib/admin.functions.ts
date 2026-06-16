@@ -45,7 +45,7 @@ export const dashboardStats = createServerFn({ method: "GET" })
     const admin = await assertAdmin(context as Ctx);
     const counts = async (status?: string) => {
       const q = admin.from("packages").select("*", { count: "exact", head: true });
-      if (status) q.eq("status", status);
+      if (status) q.eq("status", status as any);
       const { count } = await q;
       return count ?? 0;
     };

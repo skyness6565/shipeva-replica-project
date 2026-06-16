@@ -196,6 +196,46 @@ function ReceiptPage() {
     }
   }
 
+  function printReceipt() {
+    if (!receiptRef.current) {
+      toast.error("Receipt not ready yet");
+      return;
+    }
+    try {
+      const html = receiptRef.current.outerHTML;
+      // Collect current page styles (Tailwind + app CSS) so the popup looks identical.
+      const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+        .map((n) => n.outerHTML)
+        .join("\n");
+      const win = window.open("", "_blank", "width=900,height=1200");
+      if (!win) {
+        toast.error("Popup blocked. Allow popups for this site, then try again.");
+        return;
+      }
+      win.document.open();
+      win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Receipt ${r.tracking_number}</title>${styles}
+        <style>
+          @page { size: A4; margin: 10mm; }
+          html, body { background: #fff; margin: 0; padding: 16px; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          #receipt { box-shadow: none !important; border: 0 !important; max-width: 100% !important; }
+        </style>
+      </head><body>${html}</body></html>`);
+      win.document.close();
+      const trigger = () => {
+        win.focus();
+        win.print();
+        // Close shortly after print dialog dismissed
+        setTimeout(() => { try { win.close(); } catch {} }, 500);
+      };
+      // Wait for fonts/styles to apply
+      if (win.document.readyState === "complete") setTimeout(trigger, 300);
+      else win.addEventListener("load", () => setTimeout(trigger, 300));
+    } catch (e: any) {
+      toast.error(e?.message ?? "Print failed");
+    }
+  }
+
   if (isLoading || !pkg || !receipt) return <p className="text-brand-deep/60">Loading receipt…</p>;
 
   const r = receipt;

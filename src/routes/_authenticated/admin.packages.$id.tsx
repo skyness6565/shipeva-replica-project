@@ -81,6 +81,10 @@ function EditPackage() {
             className="inline-flex items-center gap-1 rounded-full border border-border bg-white px-4 py-2 text-sm font-semibold">
             <ExternalLink className="h-4 w-4" /> Public page
           </Link>
+          <Link to="/admin/packages/$id/receipt" params={{ id }}
+            className="inline-flex items-center gap-1 rounded-full bg-[#1a76d2] text-white px-4 py-2 text-sm font-semibold">
+            <Receipt className="h-4 w-4" /> Receipt
+          </Link>
           <button onClick={() => confirm("Delete this package?") && delMut.mutate()}
             className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-4 py-2 text-sm font-semibold text-white">
             <Trash2 className="h-4 w-4" /> Delete

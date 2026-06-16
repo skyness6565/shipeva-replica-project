@@ -35,7 +35,7 @@ export function emptyPackage(): PackageFormValues {
 
 const CURRENCIES = ["USD", "EUR", "GBP", "NGN", "CAD", "AUD", "BTC", "ETH", "USDT"];
 const METHODS = ["Air", "Sea", "Road"];
-const STATUSES = [
+const STATUSES: [string, string][] = [
   ["pending", "Pending"], ["processing", "Processing"], ["in_transit", "In Transit"],
   ["arrived", "Arrived"], ["delivered", "Delivered"], ["held_by_customs", "Held by Customs"],
 ];

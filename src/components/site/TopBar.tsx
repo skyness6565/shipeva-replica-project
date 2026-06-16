@@ -12,8 +12,8 @@ export function TopBar() {
             <Headphones className="h-3.5 w-3.5 text-amber" /> Toll-Free Support
           </span>
         </div>
-        <a href="mailto:hello@shipvex.co" className="inline-flex items-center gap-2 hover:text-amber">
-          <Mail className="h-3.5 w-3.5 text-amber" /> hello@shipvex.co
+        <a href="mailto:katehitler4@gmail.com" className="inline-flex items-center gap-2 hover:text-amber">
+          <Mail className="h-3.5 w-3.5 text-amber" /> katehitler4@gmail.com
         </a>
       </div>
     </div>

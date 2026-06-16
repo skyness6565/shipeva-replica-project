@@ -24,8 +24,8 @@ function toForm(pkg: any): PackageFormValues {
     id: pkg.id,
     package_name: pkg.package_name ?? "",
     tracking_number: pkg.tracking_number ?? "",
-    sender_name: pkg.sender_name ?? "", sender_email: pkg.sender_email ?? "", sender_phone: pkg.sender_phone ?? "",
-    receiver_name: pkg.receiver_name ?? "", receiver_email: pkg.receiver_email ?? "", receiver_phone: pkg.receiver_phone ?? "",
+    sender_name: pkg.sender_name ?? "", sender_email: pkg.sender_email ?? "",
+    receiver_name: pkg.receiver_name ?? "", receiver_email: pkg.receiver_email ?? "",
     origin_country: pkg.origin_country ?? "", destination_country: pkg.destination_country ?? "",
     current_location: pkg.current_location ?? "",
     shipment_fee: String(pkg.shipment_fee ?? "0"), currency: pkg.currency ?? "USD",
@@ -35,8 +35,9 @@ function toForm(pkg: any): PackageFormValues {
     shipment_description: pkg.shipment_description ?? "",
     status: pkg.status ?? "pending",
     dispatch_date: pkg.dispatch_date ?? "", expected_delivery_date: pkg.expected_delivery_date ?? "",
-    image_urls: pkg.image_urls ?? [], document_urls: pkg.document_urls ?? [],
+    image_urls: pkg.image_urls ?? [],
     notes: pkg.notes ?? "",
+    customs_hold: pkg.customs_hold ?? false,
   };
 }
 

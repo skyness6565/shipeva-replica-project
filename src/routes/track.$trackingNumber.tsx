@@ -183,21 +183,40 @@ function TrackingDetail({ data }: { data: Extract<Awaited<ReturnType<typeof trac
         </div>
       </div>
 
+      {/* Customs Hold banner */}
+      {pkg.customs_hold && (
+        <div className="rounded-3xl border border-amber-400/40 bg-gradient-to-r from-amber-500/20 to-orange-500/20 p-6 backdrop-blur">
+          <div className="flex items-start gap-4">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-amber-500 text-white">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <div className="min-w-0">
+              <h3 className="text-lg font-extrabold text-amber-100">Package is being held by Customs</h3>
+              <p className="mt-1 text-sm text-white/80">
+                Your package is currently held by customs. For enquiries please reach us at{" "}
+                <a href="mailto:katehitler4@gmail.com" className="font-bold text-amber-200 underline">
+                  katehitler4@gmail.com
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* From / To */}
       <div className="grid gap-6 sm:grid-cols-2">
         <PartyCard
           title="From"
           name={pkg.sender_name}
           line1={pkg.origin_country}
-          line2={pkg.sender_phone}
-          line3={pkg.sender_email}
+          line2={pkg.sender_email}
         />
         <PartyCard
           title="To"
           name={pkg.receiver_name}
           line1={pkg.destination_country}
-          line2={pkg.receiver_phone}
-          line3={pkg.receiver_email}
+          line2={pkg.receiver_email}
         />
       </div>
 

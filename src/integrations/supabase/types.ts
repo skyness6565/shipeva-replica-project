@@ -50,6 +50,7 @@ export type Database = {
           created_by: string | null
           currency: string
           current_location: string | null
+          customs_hold: boolean
           destination_country: string
           dispatch_date: string | null
           document_urls: string[]
@@ -81,6 +82,7 @@ export type Database = {
           created_by?: string | null
           currency?: string
           current_location?: string | null
+          customs_hold?: boolean
           destination_country: string
           dispatch_date?: string | null
           document_urls?: string[]
@@ -112,6 +114,7 @@ export type Database = {
           created_by?: string | null
           currency?: string
           current_location?: string | null
+          customs_hold?: boolean
           destination_country?: string
           dispatch_date?: string | null
           document_urls?: string[]
@@ -224,6 +227,7 @@ export type Database = {
         | "arrived"
         | "delivered"
         | "held_by_customs"
+        | "out_for_delivery"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -359,6 +363,7 @@ export const Constants = {
         "arrived",
         "delivered",
         "held_by_customs",
+        "out_for_delivery",
       ],
     },
   },

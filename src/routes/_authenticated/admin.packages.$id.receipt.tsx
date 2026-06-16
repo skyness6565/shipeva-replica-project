@@ -141,6 +141,40 @@ function ReceiptPage() {
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
   const [pdfing, setPdfing] = useState(false);
+  const [diag, setDiag] = useState<string[]>([]);
+  const log = (m: string) => setDiag((d) => [...d, `[${new Date().toLocaleTimeString()}] ${m}`]);
+
+  function runPrintDiagnostics() {
+    setDiag([]);
+    log("Starting Print diagnostics…");
+    log(`Receipt DOM present: ${receiptRef.current ? "yes" : "no"}`);
+    log(`window.print available: ${typeof window.print === "function" ? "yes" : "no"}`);
+    let testWin: Window | null = null;
+    try {
+      testWin = window.open("", "_blank", "width=400,height=300");
+    } catch (e: any) {
+      log(`window.open threw: ${e?.message ?? e}`);
+    }
+    if (!testWin) {
+      log("❌ Popup BLOCKED by browser/iframe. Allow popups for this site.");
+      return;
+    }
+    log("✅ Popup opened successfully.");
+    try {
+      testWin.document.write("<p>Print diagnostic test — closing in 1s</p>");
+      testWin.document.close();
+      log("✅ Wrote test content to popup.");
+      try {
+        testWin.print();
+        log("✅ window.print() invoked on popup (dialog should appear).");
+      } catch (e: any) {
+        log(`❌ window.print() threw: ${e?.message ?? e}`);
+      }
+      setTimeout(() => { try { testWin!.close(); } catch {} }, 1000);
+    } catch (e: any) {
+      log(`❌ Failed writing to popup: ${e?.message ?? e}`);
+    }
+  }
 
   // Hydrate state once package loads
   useEffect(() => {

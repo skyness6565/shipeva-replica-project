@@ -118,11 +118,11 @@ export const getPackage = createServerFn({ method: "GET" })
   });
 
 const PKG_FIELDS = [
-  "package_name","tracking_number","sender_name","sender_email","sender_phone",
-  "receiver_name","receiver_email","receiver_phone","origin_country","destination_country",
+  "package_name","tracking_number","sender_name","sender_email",
+  "receiver_name","receiver_email","origin_country","destination_country",
   "current_location","shipment_fee","currency","weight","package_type","shipment_method",
   "estimated_delivery_days","shipment_description","status","dispatch_date","expected_delivery_date",
-  "image_urls","document_urls","notes",
+  "image_urls","notes","customs_hold",
 ] as const;
 
 function pickPkg(input: any) {

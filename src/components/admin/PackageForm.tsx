@@ -195,7 +195,7 @@ function Section({ title, children, full }: { title: string; children: React.Rea
     </div>
   );
 }
-function Input({ label, value, onChange, type = "text", required }: any) {
+function Input({ label, value, onChange, type = "text", required }: { label: string; value: string; onChange: (v: string) => void; type?: string; required?: boolean }) {
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-wider text-brand-deep/60">{label}</span>
@@ -204,18 +204,18 @@ function Input({ label, value, onChange, type = "text", required }: any) {
     </label>
   );
 }
-function Select({ label, value, onChange, options }: any) {
+function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: [string, string][] }) {
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-wider text-brand-deep/60">{label}</span>
       <select value={value} onChange={(e) => onChange(e.target.value)}
         className="mt-1 h-11 w-full rounded-xl border border-border bg-white px-3 text-sm">
-        {options.map(([val, lbl]: [string, string]) => <option key={val} value={val}>{lbl}</option>)}
+        {options.map(([val, lbl]) => <option key={val} value={val}>{lbl}</option>)}
       </select>
     </label>
   );
 }
-function Textarea({ label, value, onChange }: any) {
+function Textarea({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <label className="block">
       <span className="text-xs font-bold uppercase tracking-wider text-brand-deep/60">{label}</span>
@@ -223,4 +223,5 @@ function Textarea({ label, value, onChange }: any) {
         className="mt-1 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm outline-none focus:border-brand-glow" />
     </label>
   );
+}
 }

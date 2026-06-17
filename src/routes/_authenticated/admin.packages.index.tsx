@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { listPackages } from "@/lib/admin.functions";
+import { listPackages, checkIsAdmin } from "@/lib/admin.functions";
 import { Search, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/packages/")({
@@ -27,11 +27,17 @@ function PackagesList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const fn = useServerFn(listPackages);
+  const whoamiFn = useServerFn(checkIsAdmin);
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["packages", search, status],
     queryFn: () => fn({ data: { search, status } }),
     retry: 2,
     retryDelay: 400,
+  });
+  const whoami = useQuery({
+    queryKey: ["whoami"],
+    queryFn: () => whoamiFn(),
+    retry: false,
   });
 
   return (
@@ -42,6 +48,27 @@ function PackagesList() {
           <Plus className="h-4 w-4" /> New Package
         </Link>
       </div>
+      <div className="rounded-2xl border border-border bg-white p-3 text-xs">
+        <p className="font-semibold text-brand-deep">Account check</p>
+        {whoami.isLoading && <p className="text-brand-deep/60 mt-1">Checking…</p>}
+        {whoami.error && (
+          <p className="text-rose-600 mt-1">Error: {(whoami.error as Error).message}</p>
+        )}
+        {whoami.data && (
+          <div className="mt-1 space-y-0.5 text-brand-deep/70 font-mono break-all">
+            <p>email: {whoami.data.email ?? "(none)"}</p>
+            <p>userId: {whoami.data.userId}</p>
+            <p>roles: {whoami.data.roles.length ? whoami.data.roles.join(", ") : "(none)"}</p>
+            <p>
+              isAdmin:{" "}
+              <span className={whoami.data.isAdmin ? "text-emerald-700 font-bold" : "text-rose-600 font-bold"}>
+                {String(whoami.data.isAdmin)}
+              </span>
+            </p>
+          </div>
+        )}
+      </div>
+
       <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-white border border-border p-4">
         <div className="relative flex-1 min-w-[220px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-deep/40" />

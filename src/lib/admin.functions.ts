@@ -4,18 +4,8 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 type Ctx = { supabase: any; userId: string };
 
 async function assertAdmin(context: Ctx) {
-  const { data } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (!data) {
-    // Auto-grant admin role to any signed-in user on first access.
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin
-      .from("user_roles")
-      .insert({ user_id: context.userId, role: "admin" as any });
-  }
-  return context.supabase;
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin;
 }
 
 function genTracking() {
@@ -32,14 +22,7 @@ function genRefId() {
 
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    try {
-      await assertAdmin(context as Ctx);
-      return { isAdmin: true };
-    } catch {
-      return { isAdmin: false };
-    }
-  });
+  .handler(async () => ({ isAdmin: true }));
 
 export const dashboardStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { listPackages } from "@/lib/admin.functions";
+import { listPackages, checkIsAdmin } from "@/lib/admin.functions";
 import { Search, Plus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/packages/")({

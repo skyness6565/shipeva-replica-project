@@ -93,6 +93,7 @@ export function PackageForm({
     onSubmit({
       ...v,
       status,
+      package_name: v.package_name || v.shipment_description?.slice(0, 60) || `Package for ${v.receiver_name}`,
       shipment_fee: v.shipment_fee ? Number(v.shipment_fee) : 0,
       weight: v.weight ? Number(v.weight) : null,
       estimated_delivery_days: v.estimated_delivery_days ? Number(v.estimated_delivery_days) : null,

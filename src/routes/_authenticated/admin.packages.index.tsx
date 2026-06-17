@@ -27,11 +27,17 @@ function PackagesList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const fn = useServerFn(listPackages);
+  const whoamiFn = useServerFn(checkIsAdmin);
   const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["packages", search, status],
     queryFn: () => fn({ data: { search, status } }),
     retry: 2,
     retryDelay: 400,
+  });
+  const whoami = useQuery({
+    queryKey: ["whoami"],
+    queryFn: () => whoamiFn(),
+    retry: false,
   });
 
   return (

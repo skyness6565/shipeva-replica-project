@@ -22,7 +22,26 @@ function genRefId() {
 
 export const checkIsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => ({ isAdmin: true }));
+  .handler(async ({ context }) => {
+    const { supabase, userId, claims } = context as Ctx & { claims: any };
+    const { data: roleRows, error: rolesError } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+    const roles: string[] = (roleRows ?? []).map((r: any) => r.role);
+    const { data: isAdminRpc, error: rpcError } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+    return {
+      userId,
+      email: claims?.email ?? null,
+      roles,
+      isAdmin: Boolean(isAdminRpc) || roles.includes("admin"),
+      rolesError: rolesError?.message ?? null,
+      rpcError: rpcError?.message ?? null,
+    };
+  });
 
 export const dashboardStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

@@ -60,10 +60,7 @@ function AuthPage() {
         <Link to="/" className="inline-flex items-center gap-2 font-display font-extrabold text-xl">
           <Truck className="h-6 w-6 text-brand-glow" /> Shipvex Admin
         </Link>
-        <h1 className="mt-6 text-2xl font-display font-extrabold">Sign in to dashboard</h1>
-        <p className="mt-1 text-sm text-brand-deep/60">
-          Restricted area. Authorized personnel only.
-        </p>
+        <h1 className="mt-6 text-2xl font-display font-extrabold">Enter password</h1>
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div>
             <label className="text-xs font-bold uppercase tracking-wider">Password</label>

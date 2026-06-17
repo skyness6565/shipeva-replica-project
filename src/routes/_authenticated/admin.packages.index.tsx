@@ -79,6 +79,21 @@ function PackagesList() {
               {isLoading && (
                 <tr><td colSpan={5} className="px-4 py-8 text-center text-brand-deep/50">Loading…</td></tr>
               )}
+              {error && !isFetching && (
+                <tr>
+                  <td colSpan={5} className="px-4 py-8 text-center">
+                    <p className="text-rose-600 font-semibold text-sm">
+                      Failed to load packages: {(error as Error).message}
+                    </p>
+                    <button
+                      onClick={() => refetch()}
+                      className="mt-3 inline-flex rounded-full bg-hero-gradient px-5 py-2 text-xs font-bold text-white"
+                    >
+                      Retry
+                    </button>
+                  </td>
+                </tr>
+              )}
               {data?.map((p: any) => (
                 <tr key={p.id} className="border-t border-border hover:bg-secondary/30">
                   <td className="px-4 py-3">
@@ -99,7 +114,7 @@ function PackagesList() {
                   <td className="px-4 py-3 text-xs text-brand-deep/50">{new Date(p.created_at).toLocaleDateString()}</td>
                 </tr>
               ))}
-              {data && data.length === 0 && (
+              {data && data.length === 0 && !error && (
                 <tr><td colSpan={5} className="px-4 py-8 text-center text-brand-deep/50">No packages found.</td></tr>
               )}
             </tbody>

@@ -281,13 +281,12 @@ export const signedUrlForUpload = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { bucket: "package-images" | "package-documents"; path: string }) => d)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context as Ctx);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: signed, error } = await supabaseAdmin.storage
+    const admin = await assertAdmin(context as Ctx);
+    const { data: signed, error } = await admin.storage
       .from(data.bucket)
       .createSignedUploadUrl(data.path);
     if (error) throw new Error(error.message);
-    const { data: read } = await supabaseAdmin.storage
+    const { data: read } = await admin.storage
       .from(data.bucket)
       .createSignedUrl(data.path, 60 * 60 * 24 * 365);
     return { upload: signed, readUrl: read?.signedUrl };

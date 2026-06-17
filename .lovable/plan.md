@@ -1,56 +1,35 @@
-# Shipment Tracking + Admin Panel
+## Problem
 
-Build real tracking on the homepage and a full admin panel, backed by Lovable Cloud (Postgres + Auth + Storage). Tech note: the project uses TanStack Start (not Node/MySQL); Lovable Cloud gives us the same capabilities with zero setup. If you specifically need Node/MySQL, tell me and I'll switch approach.
+`alaye@gmail.com` has the `admin` role in the database, but the admin panel shows "Not authorized" after sign-in.
 
-## 1. Backend (Lovable Cloud)
+Root cause: `src/lib/admin.functions.ts` uses `supabaseAdmin` (service-role client) for all Data API reads/writes, including the `assertAdmin` role check. On Lovable Cloud the service-role key is the new `sb_secret_*` format, which PostgREST rejects with `Expected 3 parts in JWT; got 1`. The `user_roles` query throws, `checkIsAdmin` catches it and returns `isAdmin: false` — so every signed-in user sees "Not authorized", and a real admin can't get in.
 
-Enable Lovable Cloud, then create:
+(The "anybody with this details can access" phrasing is misleading — nobody can currently get in, including the legit admin. The DB still enforces the role; this is purely a server-fn client mismatch.)
 
-**Tables**
-- `packages` — all fields you listed (name, tracking_number unique, reference_id, sender/receiver name+email+phone, origin, destination, current_location, fee, currency, weight, type, method, eta_days, description, status enum, dispatch_date, expected_delivery_date, notes, image_urls[], document_urls[], timestamps).
-- `tracking_events` — package_id, status, location, note, event_time. Powers tracking history + customs/delivery notices.
-- `customers` — auto-upserted from sender/receiver on package create; editable/deletable.
-- `user_roles` + `app_role` enum (`admin`) + `has_role()` security-definer fn (per project standards — roles never on profiles).
+## Fix
 
-**Storage buckets**: `package-images` (public), `package-documents` (private, signed URLs).
+Switch `admin.functions.ts` from `supabaseAdmin` (Data API) to `context.supabase` (the user-scoped client from `requireSupabaseAuth`). The existing RLS policies already gate every table with `has_role(auth.uid(), 'admin')`, so an admin user reaches the rows and a non-admin gets blocked by Postgres — same security boundary, without the broken JWT path.
 
-**RLS**
-- `packages`, `tracking_events`, `customers`: SELECT for tracking is done via a public server function (admin client, safe column projection by tracking_number). All writes require `has_role(auth.uid(),'admin')`.
-- `user_roles`: read self + admin manage.
+### Changes in `src/lib/admin.functions.ts`
 
-**Server functions** (`createServerFn`)
-- Public: `trackPackage({ trackingNumber })` → returns package + ordered events.
-- Admin (guarded by `requireSupabaseAuth` + `has_role` check):
-  `listPackages`, `getPackage`, `createPackage` (auto-generates tracking# `SHIPEVA-XXXXXXXX` and ref ID, upserts customers, sends creation email), `updatePackage`, `deletePackage`, `addTrackingEvent` (sends status email), `listCustomers`, `updateCustomer`, `deleteCustomer`, `dashboardStats`.
-- Emails via Lovable Emails (will prompt for email domain setup on first send).
+1. Replace `assertAdmin` with a `has_role` RPC check via `context.supabase`:
+   ```ts
+   async function assertAdmin(context: Ctx) {
+     const { data, error } = await context.supabase.rpc("has_role", {
+       _user_id: context.userId, _role: "admin",
+     });
+     if (error) throw new Error(error.message);
+     if (!data) throw new Error("Forbidden: admin role required");
+     return context.supabase;
+   }
+   ```
+2. In every handler, use the returned `context.supabase` (rename local var from `admin` → `db`) for `packages`, `tracking_events`, `customers`, `user_roles` reads/writes. RLS will enforce admin-only access.
+3. Keep `supabaseAdmin` ONLY inside `signedUrlForUpload` (Storage signed URLs are fine with the service-role key and don't go through PostgREST). Import it lazily inside that handler.
 
-## 2. Homepage tracking
+No DB migration, no UI changes, no auth flow changes. `admin.tsx`, `route.tsx`, and the attacher middleware stay as-is.
 
-Wire existing `TrackingBar.tsx` to `trackPackage`. Add `/track/:trackingNumber` route showing:
-- Header card: status badge, tracking #, route (origin → destination), ETA, current location, sender/receiver summary.
-- Vertical timeline of `tracking_events` (newest first), with location + note + timestamp.
-- Package images gallery.
-- Loading / not-found / error states.
+## Verification
 
-## 3. Admin panel (`/admin/*`, gated)
-
-- `/auth` — email+password sign-in (admins only; non-admins see "not authorized").
-- `_authenticated/admin/route.tsx` — sidebar layout, checks `has_role admin` in `beforeLoad`, else redirect.
-- `/admin` Dashboard — 4 stat cards (total/active/delivered/pending), recent activities feed (latest tracking_events), quick search.
-- `/admin/packages` — sortable/filterable table (status, method, search by tracking#/name/email), pagination.
-- `/admin/packages/new` and `/admin/packages/$id` — full form with all fields you listed, currency selector (USD/EUR/GBP/NGN/CAD/AUD/BTC/ETH/USDT), status dropdown (Pending/Processing/In Transit/Arrived/Delivered/Held by Customs), image + document uploads to Storage, notes.
-- `/admin/packages/$id` also has **Tracking History** panel: add event (status, location, note) → one-click status update + appends to timeline + triggers email.
-- `/admin/customers` — list, search by name/email, edit, delete.
-- Dark/light mode toggle in header (already have tokens).
-
-## 4. Seeding & first admin
-
-After Cloud is enabled I'll ask you to sign up once at `/auth`, then run a one-time SQL to grant your user the `admin` role (safer than a public bootstrap endpoint).
-
-## Out of scope
-- Real payments/crypto checkout (currency is metadata only).
-- Customer-facing accounts (only admins log in).
-- Multi-tenant / multiple admin roles beyond `admin`.
-
-## Approve to proceed
-Reply "go" and I'll enable Cloud and start building. If you want Node.js + MySQL instead of Lovable Cloud, say so now.
+- Sign in as `alaye@gmail.com` → admin layout renders, sidebar + dashboard load.
+- Sign in as any non-admin user → still sees "Not authorized" (RLS blocks `has_role` returning true).
+- Package list / customer list / create / update / delete all work for admin.

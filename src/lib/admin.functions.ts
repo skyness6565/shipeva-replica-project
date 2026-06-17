@@ -4,16 +4,13 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 type Ctx = { supabase: any; userId: string };
 
 async function assertAdmin(context: Ctx) {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin
-    .from("user_roles")
-    .select("id")
-    .eq("user_id", context.userId)
-    .eq("role", "admin")
-    .maybeSingle();
+  const { data, error } = await context.supabase.rpc("has_role", {
+    _user_id: context.userId,
+    _role: "admin",
+  });
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Forbidden: admin role required");
-  return supabaseAdmin;
+  return context.supabase;
 }
 
 function genTracking() {
@@ -55,7 +52,7 @@ export const dashboardStats = createServerFn({ method: "GET" })
       counts("processing"),
       counts("in_transit"),
       counts("delivered"),
-      admin.from("customers").select("*", { count: "exact", head: true }).then((r) => r.count ?? 0),
+      admin.from("customers").select("*", { count: "exact", head: true }).then((r: any) => r.count ?? 0),
     ]);
     const { data: recent } = await admin
       .from("tracking_events")
@@ -284,12 +281,13 @@ export const signedUrlForUpload = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { bucket: "package-images" | "package-documents"; path: string }) => d)
   .handler(async ({ data, context }) => {
-    const admin = await assertAdmin(context as Ctx);
-    const { data: signed, error } = await admin.storage
+    await assertAdmin(context as Ctx);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
       .from(data.bucket)
       .createSignedUploadUrl(data.path);
     if (error) throw new Error(error.message);
-    const { data: read } = await admin.storage
+    const { data: read } = await supabaseAdmin.storage
       .from(data.bucket)
       .createSignedUrl(data.path, 60 * 60 * 24 * 365);
     return { upload: signed, readUrl: read?.signedUrl };

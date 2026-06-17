@@ -1,10 +1,7 @@
-import { createFileRoute, Outlet, Link, redirect, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
-import { checkIsAdmin } from "@/lib/admin.functions";
+import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  LayoutDashboard, Package, Users, LogOut, Truck, Loader2, Plus,
+  LayoutDashboard, Package, Users, LogOut, Truck, Plus,
 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
@@ -15,41 +12,6 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function AdminLayout() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const check = useServerFn(checkIsAdmin);
-  const { data, isLoading } = useQuery({
-    queryKey: ["is-admin"],
-    queryFn: () => check(),
-  });
-
-  if (isLoading) {
-    return (
-      <div className="grid min-h-screen place-items-center">
-        <Loader2 className="h-6 w-6 animate-spin text-brand-deep" />
-      </div>
-    );
-  }
-
-  if (!data?.isAdmin) {
-    return (
-      <div className="grid min-h-screen place-items-center bg-background px-4">
-        <div className="max-w-md rounded-2xl border border-border bg-white p-8 text-center">
-          <h1 className="font-display text-2xl font-extrabold">Not authorized</h1>
-          <p className="mt-2 text-brand-deep/60">
-            Your account doesn't have admin access. Contact the system owner to grant the <code>admin</code> role.
-          </p>
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              navigate({ to: "/auth" });
-            }}
-            className="mt-6 inline-flex h-11 items-center justify-center rounded-full bg-hero-gradient px-6 text-sm font-bold text-white"
-          >
-            Sign out
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   const nav = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },

@@ -52,7 +52,7 @@ export const dashboardStats = createServerFn({ method: "GET" })
       counts("processing"),
       counts("in_transit"),
       counts("delivered"),
-      admin.from("customers").select("*", { count: "exact", head: true }).then((r) => r.count ?? 0),
+      admin.from("customers").select("*", { count: "exact", head: true }).then((r: any) => r.count ?? 0),
     ]);
     const { data: recent } = await admin
       .from("tracking_events")

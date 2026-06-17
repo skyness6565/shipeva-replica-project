@@ -77,7 +77,7 @@ function PackagesList() {
               {isLoading && (
                 <tr><td colSpan={5} className="px-4 py-8 text-center text-brand-deep/50">Loading…</td></tr>
               )}
-              {data?.map((p) => (
+              {data?.map((p: any) => (
                 <tr key={p.id} className="border-t border-border hover:bg-secondary/30">
                   <td className="px-4 py-3">
                     <Link to="/admin/packages/$id" params={{ id: p.id }} className="font-mono font-semibold text-brand-glow hover:underline">

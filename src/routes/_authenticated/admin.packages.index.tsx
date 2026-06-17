@@ -27,9 +27,11 @@ function PackagesList() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const fn = useServerFn(listPackages);
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["packages", search, status],
     queryFn: () => fn({ data: { search, status } }),
+    retry: 2,
+    retryDelay: 400,
   });
 
   return (

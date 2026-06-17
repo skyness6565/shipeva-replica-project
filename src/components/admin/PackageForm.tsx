@@ -105,7 +105,6 @@ export function PackageForm({
   return (
     <form onSubmit={submit} className="space-y-6">
       <Section title="Package">
-        <Input label="Package Name *" value={v.package_name} onChange={(x) => set("package_name", x)} required />
         <Input label="Tracking Number (auto if blank)" value={v.tracking_number} onChange={(x) => set("tracking_number", x)} />
         <Input label="Package Type" value={v.package_type} onChange={(x) => set("package_type", x)} />
         <Input label="Weight (kg)" type="number" value={v.weight} onChange={(x) => set("weight", x)} />

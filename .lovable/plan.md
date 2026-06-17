@@ -1,35 +1,28 @@
-## Problem
+## Goal
 
-`alaye@gmail.com` has the `admin` role in the database, but the admin panel shows "Not authorized" after sign-in.
+Fix the bug where the phone (hitting the deployed site) shows 0 packages while the laptop (hitting the dev sandbox) shows 2.
 
-Root cause: `src/lib/admin.functions.ts` uses `supabaseAdmin` (service-role client) for all Data API reads/writes, including the `assertAdmin` role check. On Lovable Cloud the service-role key is the new `sb_secret_*` format, which PostgREST rejects with `Expected 3 parts in JWT; got 1`. The `user_roles` query throws, `checkIsAdmin` catches it and returns `isAdmin: false` — so every signed-in user sees "Not authorized", and a real admin can't get in.
+## Root cause (recap)
 
-(The "anybody with this details can access" phrasing is misleading — nobody can currently get in, including the legit admin. The DB still enforces the role; this is purely a server-fn client mismatch.)
+The deployed Worker is missing the Supabase env vars that auth + server functions read at request time. `.env` is only loaded in the dev sandbox, so the laptop works and the phone doesn't.
 
-## Fix
+## Values collected from your project
 
-Switch `admin.functions.ts` from `supabaseAdmin` (Data API) to `context.supabase` (the user-scoped client from `requireSupabaseAuth`). The existing RLS policies already gate every table with `has_role(auth.uid(), 'admin')`, so an admin user reaches the rows and a non-admin gets blocked by Postgres — same security boundary, without the broken JWT path.
+I read these from `.env` myself:
 
-### Changes in `src/lib/admin.functions.ts`
+- `SUPABASE_URL` = `https://kfxparmwqnncqpioudkq.supabase.co`
+- `SUPABASE_PUBLISHABLE_KEY` = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...EXog` (the anon JWT in `.env`)
 
-1. Replace `assertAdmin` with a `has_role` RPC check via `context.supabase`:
-   ```ts
-   async function assertAdmin(context: Ctx) {
-     const { data, error } = await context.supabase.rpc("has_role", {
-       _user_id: context.userId, _role: "admin",
-     });
-     if (error) throw new Error(error.message);
-     if (!data) throw new Error("Forbidden: admin role required");
-     return context.supabase;
-   }
-   ```
-2. In every handler, use the returned `context.supabase` (rename local var from `admin` → `db`) for `packages`, `tracking_events`, `customers`, `user_roles` reads/writes. RLS will enforce admin-only access.
-3. Keep `supabaseAdmin` ONLY inside `signedUrlForUpload` (Storage signed URLs are fine with the service-role key and don't go through PostgREST). Import it lazily inside that handler.
+The **service role key** is not stored in project files on Lovable Cloud and cannot be read by me. The good news: the admin packages list page uses `requireSupabaseAuth` (publishable key + your user token), not the service role key — so we don't need it to fix the "0 packages on phone" bug.
 
-No DB migration, no UI changes, no auth flow changes. `admin.tsx`, `route.tsx`, and the attacher middleware stay as-is.
+## Changes
+
+1. Add secret `SUPABASE_URL` = the URL above.
+2. Add secret `SUPABASE_PUBLISHABLE_KEY` = the publishable key above.
+3. (Skip `SUPABASE_SERVICE_ROLE_KEY` for now — only needed if/when a feature uses the admin client. We can add it later if a specific feature breaks.)
 
 ## Verification
 
-- Sign in as `alaye@gmail.com` → admin layout renders, sidebar + dashboard load.
-- Sign in as any non-admin user → still sees "Not authorized" (RLS blocks `has_role` returning true).
-- Package list / customer list / create / update / delete all work for admin.
+- After secrets are added, reload the admin packages page on your phone.
+- Expect to see the same 2 packages as on the laptop.
+- If any other server function fails later with an error mentioning admin/service role, we'll wire that key in as a follow-up.

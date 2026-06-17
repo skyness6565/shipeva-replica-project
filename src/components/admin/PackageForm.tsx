@@ -126,8 +126,6 @@ export function PackageForm({
         <Input label="Current Location" value={v.current_location} onChange={(x) => set("current_location", x)} />
         <Select label="Shipment Method" value={v.shipment_method} onChange={(x) => set("shipment_method", x)} options={METHODS.map((m) => [m, m])} />
         <Input label="Estimated Delivery Days" type="number" value={v.estimated_delivery_days} onChange={(x) => set("estimated_delivery_days", x)} />
-        <Input label="Dispatch Date" type="date" value={v.dispatch_date} onChange={(x) => set("dispatch_date", x)} />
-        <Input label="Expected Delivery Date" type="date" value={v.expected_delivery_date} onChange={(x) => set("expected_delivery_date", x)} />
         <Select label="Status" value={v.status} onChange={(x) => set("status", x)} options={STATUSES} />
       </Section>
 

@@ -93,6 +93,7 @@ export function PackageForm({
     onSubmit({
       ...v,
       status,
+      package_name: v.package_name || v.shipment_description?.slice(0, 60) || `Package for ${v.receiver_name}`,
       shipment_fee: v.shipment_fee ? Number(v.shipment_fee) : 0,
       weight: v.weight ? Number(v.weight) : null,
       estimated_delivery_days: v.estimated_delivery_days ? Number(v.estimated_delivery_days) : null,
@@ -105,7 +106,6 @@ export function PackageForm({
   return (
     <form onSubmit={submit} className="space-y-6">
       <Section title="Package">
-        <Input label="Package Name *" value={v.package_name} onChange={(x) => set("package_name", x)} required />
         <Input label="Tracking Number (auto if blank)" value={v.tracking_number} onChange={(x) => set("tracking_number", x)} />
         <Input label="Package Type" value={v.package_type} onChange={(x) => set("package_type", x)} />
         <Input label="Weight (kg)" type="number" value={v.weight} onChange={(x) => set("weight", x)} />
@@ -127,8 +127,6 @@ export function PackageForm({
         <Input label="Current Location" value={v.current_location} onChange={(x) => set("current_location", x)} />
         <Select label="Shipment Method" value={v.shipment_method} onChange={(x) => set("shipment_method", x)} options={METHODS.map((m) => [m, m])} />
         <Input label="Estimated Delivery Days" type="number" value={v.estimated_delivery_days} onChange={(x) => set("estimated_delivery_days", x)} />
-        <Input label="Dispatch Date" type="date" value={v.dispatch_date} onChange={(x) => set("dispatch_date", x)} />
-        <Input label="Expected Delivery Date" type="date" value={v.expected_delivery_date} onChange={(x) => set("expected_delivery_date", x)} />
         <Select label="Status" value={v.status} onChange={(x) => set("status", x)} options={STATUSES} />
       </Section>
 
@@ -166,7 +164,6 @@ export function PackageForm({
 
       <Section title="Details" full>
         <Textarea label="Shipment Description" value={v.shipment_description} onChange={(x) => set("shipment_description", x)} />
-        <Textarea label="Internal Notes" value={v.notes} onChange={(x) => set("notes", x)} />
       </Section>
 
       <div className="rounded-2xl bg-white border border-border p-5">

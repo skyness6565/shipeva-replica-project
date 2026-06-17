@@ -163,7 +163,6 @@ export function PackageForm({
 
       <Section title="Details" full>
         <Textarea label="Shipment Description" value={v.shipment_description} onChange={(x) => set("shipment_description", x)} />
-        <Textarea label="Internal Notes" value={v.notes} onChange={(x) => set("notes", x)} />
       </Section>
 
       <div className="rounded-2xl bg-white border border-border p-5">
